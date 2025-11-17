@@ -1340,6 +1340,18 @@ motivation：减少创建/终止大量线程带来的大量开销，提前在线
 4. 如果workerCount >= corePoolSize && workerCount < maximumPoolSize，且线程池内的阻塞队列已满，则创建并启动一个线程来执行新提交的任务。
 5. 如果workerCount >= maximumPoolSize，并且线程池内的阻塞队列已满, 则根据拒绝策略来处理该任务, 默认的处理方式是直接抛异常。
 
+## <center>Swing框架
+Swing GUI包含了两种元素：**组件和容器。**组件是单独的控制元素，组件要放到容器中才能显示出来。**容器也是组件，因此容器也可以放到别的容器中。**组件和容器构成了层级关系。
+
+![swing](./figure/15.png)
+注意上图中框起来的内容的继承关系。
+Swing的组件继承于JComponent类。JComponent类提供了所有组件都需要的功能。JComponent继承于AWT的类Component及其子类Container。常见的组件有标签JLabel、按键JButton、输入框JTextField、复选框JCheckBox、列表JList。
+容器是一种可以包含组件的特殊组件。
+
+Swing中有两大类容器：
+- 一类是重量级容器，或者称为顶层容器，它们不继承于Jcomponent，包括JFrame，JApplet，Jdialog. 它们的最大特点是不能被别的容器包含，只能作为界面程序的最顶层容器来包含其它组件。
+- 第二类容器是轻量级容器，或者称为中间层容器，它们继承于JComponent，包括JPanel，JScrollPane等。**中间层容器用来将若干个相关联的组件放在一起。由于中间层容器继承于JComponent，因此它们本身也是组件，它们可以（也必须）包含在其它的容器中。**
+
 ## <center>网络编程
 
 ### 网络
