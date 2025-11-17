@@ -550,7 +550,7 @@ public class Singleton{
 
     private Singleton(){}
 
-    public statc Singleton getInstance(){
+    public static Singleton getInstance(){
         if (singleton02 == NULL){
             singleton02 = new Singleton();
         }
@@ -918,7 +918,41 @@ public interface StudentDao{
 }
 ```
 **Step 3:创建数据访问对象实体类**
-略
+```
+public class StudentDaoImpl implements StudentDao {
+ //列表是当作一个数据库
+    List<Student> students;
+
+    public StudentDaoImpl() {
+        students = new ArrayList<Student>();
+        Student student1 = new Student("Robert", 0);
+        Student student2 = new Student("John", 1);
+        students.add(student1);
+        students.add(student2);
+    }
+    @Override
+    public void deleteStudent(Student student) {
+        students.remove(student.getRollNo());
+        System.out.println("Student: Roll No " + student.getRollNo() + ",deleted from database");
+    }
+    //从数据库中检索学生名单
+    @Override
+    public List<Student> getAllStudents() {
+        return students;
+    }
+
+    @Override
+    public Student getStudent(int rollNo) {
+        return students.get(rollNo);
+    }
+
+    @Override
+    public void updateStudent(Student student) {
+        students.get(student.getRollNo()).setName(student.getName());
+        System.out.println("Student: Roll No " + student.getRollNo()+ ", updated in the database");
+    }
+}
+```
 
 ### <center>MVC模式（模型视图控制器模式）
 每个组件的三个特征：内容/外观/行为
