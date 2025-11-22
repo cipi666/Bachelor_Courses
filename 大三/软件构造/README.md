@@ -1342,6 +1342,40 @@ OutputStream fOut = new FileOutputStream(f);
 Java所有的流类位于java.io包中，都分别继承自以下四种抽象流类型：
 ![流](./figure/10.png)
 
+在java中只要“类名”以Stream结尾的都是字节流，以“Reader/Writer”结尾的都是字符流,所有的流都实现了java.io.Closeable接口
+- 都是可关闭的，都有close()方法
+- 流毕竟是一个管道，用完之后要关闭，不然会耗费很多资源
+- 输出流有flush()
+- 字节流与字符流是可转换的
+
+### 操作文件
+
+Path和Files类封装了在用户机器上处理文件系统所需的所有功能。
+Path(路径) 表示的是一个目录名序列，其后还可以跟着一个文件名。
+- 以根部件（例如C:\ ）开始的路径是绝对路径；
+- 否则，就是相对路径。
+
+#### 读写文件
+Files是操作文件的工具类,包含了大量的方法，Files类可以使得普通文件操作变得快捷，Files提供的读写方法，受内存限制，只能读写小文件。对于大型文件，还是需要文件流，每次只读写一部分文件内容。
+可以用下面的方式很容易地读取文件的所有内容：
+```
+byte[] bytes = Files.readAllBytes(path);  
+```
+我们还可以以如下的方式从文本文件中读取内容：
+```var content = Files.readString(path, charset)```，例如：
+```
+String content = Files.readString(Paths.get("/path/to/file.txt"), StandardCharsets.ISO_8859_1);
+```
+但是如果希望将文件当作行序列读入，那么可以调用：
+```List<String> lines = Files.readAlllines(path, charset);```
+
+如果希望写出一个字符串到文件中，可以调用：
+```Files.writeString(path, content.chatset);```  
+向指定文件追加内容，可以调用：
+```Files.write(path, content.getBytes(charset), StandardOpenOption.APPEND);```
+还可以用下面的语句将一个行的集合写出到文件中：
+```Files.write(path, lines, charset); ```
+
 ## Java中的多线程
 
 ### 进程与线程（简答题考点）
