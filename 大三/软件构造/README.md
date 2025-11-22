@@ -269,8 +269,123 @@ public class WildCardSuperDemo {
 - ?表示不确定的类型，不是类型变量，通常用于泛型方法的调用代码和形参，不能用于定义类和泛型方法。
 
 ### 反射
-感觉不是很重要，先略。应该会结合单例模式来考察，可以看单例模式。
 
+#### Motivation
+- 在运行时获知任意一个对象所属的类。                          
+- 在运行时构造任意一个类的对象。                                                     
+- 在运行时获知任意一个类所具有的成员变量和方法。        
+- 在运行时调用任意一个对象的方法和属性。             
+
+#### Class
+Java运行时系统始终为所有对象维护一个运行时类型标识符，会跟踪每个对象所属的类的完整结构信息，包括包名、类名、实现的接口、拥有的方法和字段等，JVM利用这些信息选择要执行的正确方法，可以使用特殊的Java类访问这信息。
+对Class类的理解
+- 可以把Class类理解为类的类型
+- 一个Class对象称为类的类型对象
+![class](./figure/16.png)
+
+#### 获取class类的对象
+1. getClass() 方法
+    - Object类中的getClass()方法会返回一个Class类型的实例
+2. Class.forName() 方法
+    - 将类名保存在字符串中
+3. T.class
+    - T是任意的Java类型（可能是类也可能不是类）
+
+#### 通过反射构造类的实例
+**方法一：使用Class.newInstance**
+- newInstance方法调用默认的构造函数(无参)初始化新创建的对象
+- 如果这个类没有默认的构造函数，就会抛出一个异常
+```
+Date date1 = new Date();
+Class dateClass2 = date1.getClass();
+Date date2 = dateClass2.newInstance(); 
+```
+**方法二：使用Constructor的newInstance**
+- 通过反射先获取构造方法再调用
+- 先获取构造函数，再执行构造函数
+
+两个方法的区别：
+- Constructor.newInstance是可以携带参数的
+- Class.newInstance是无参的
+
+获取构造函数
+- 获取所有"公有的"构造方法
+    - public Constructor[] getConstructors() { }
+- 获取所有的构造方法（包括私有、受保护、默认、公有）
+    - public Constructor[] getDeclaredConstructors() { }
+- 获取一个指定参数类型的"公有的"构造方法
+    - public Constructor getConstructor(Class... parameterTypes) { }
+- 获取一个指定参数类型的"构造方法"，可以是私有的，或受保护、默认、公有
+    - public Constructor getDeclaredConstructor(Class... parameterTypes) { }
+
+**使用Constructor的newInstance构造类的实例**
+```
+public class ConTest {
+    public static void main(String[] args) {
+        Student Harry = new Student("Harry Potter", 11);
+        Class StudentClass = Harry.getClass();
+        Constructor con = StudentClass.getConstructor(String.class, int.class);
+        Student Ron = (Student)con.newInstance("Ron Weasley", 11);
+        System.out.println(Ron);
+    }
+}
+```
+#### 通过反射获取和修改成员变量
+
+- 获取所有公有的字段
+    - public Field[] getFields() { }
+- 获取所有的字段（包括私有、受保护、默认的）
+    - public Field[] getDeclaredFields() { }
+- 获取一个指定名称的公有的字段
+    - public Field getField(String name) { }
+- 获取一个指定名称的字段，可以是私有、受保护、默认的
+    - public Field getDeclaredField(String name) { }
+- 使用Field类中的get方法查看字段值
+- 使用Field类中的set方法修改字段值
+
+例：
+```
+public class FieldTest {
+    public static void main(String[] args) {
+        Student Harry = new Student("Harry Potter", 11);
+        Class StudentClass = Harry.getClass();
+        Field f = StudentClass.getDeclaredField("name");
+        f.setAccessible(true);
+        Object v1 = f.get(Harry);
+        System.out.println(v1);
+    }
+    f.set(Harry,"The boy who lived");
+    System.out.println(Harry.getName());
+}// 调用f.set(Harry, newValue)可以修改harry对象的name属性为newValue中的值
+```
+#### 通过反射获取成员方法
+通过反射获取成员方法
+- 获取所有"公有方法"（包含父类的方法，当然也包含 Object 类）
+  - public Method[] getMethods() { }
+- 获取所有的成员方法，包括私有的（不包括继承的）
+  - public Method[] getDeclaredMethods() { }
+- 获取一个指定方法名和参数类型的成员方法
+  - public Method getMethod(String name, Class<?>... parameterTypes)
+
+Object invoke(Object obj, Object… args)
+- 第一个参数是哪个对象要来调用这个方法
+- 第一个参数是调用方法时所传递的实参
+- 对于静态方法，第一个参数可以忽略，即可设为null
+
+```
+public class MethodTest {
+    public static void main(String[] args) {
+        Student Harry = new Student("Harry Potter", 11);
+    }
+    Method m = Student.class.getMethod("getName");
+    String n = (String) m.invoke(Harry);
+}
+```
+**优点**
+- 比较灵活，能够在运行时动态获取类的实例
+**缺点**
+- 性能瓶颈：反射相当于一系列解释操作，通知JVM要做的事情，性能比直接的Java代码要慢很多.
+- 安全问题：反射机制破坏了封装性，因为通过反射可以获取并调用类的私有方法和字段。
 
 ## <center>面向对象
 **面向对象的三大特性：封装，继承和多态。**
@@ -1180,6 +1295,9 @@ synchronized (this) { ... }
 
 > 如果改用其它对象当锁，比如 `synchronized(lock)`，那就必须配套调用 `lock.wait()` / `lock.notifyAll()`，否则会抛 `IllegalMonitorStateException`。
 
+#### 生产者-消费者设计模式的优点：
+- 并发（异步）：生产者和消费者各司其职，生产者和消费者都只需要关心缓冲区，不需要互相关注，通过异步的方式支持高并发，将一个耗时的流程拆成生产和消费两个阶段。
+- 解耦：生产者和消费者进行解耦（通过缓冲区通讯）。
 
 ## <center>Java中的数据流
 ### 流的分类
