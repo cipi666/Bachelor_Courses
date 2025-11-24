@@ -766,6 +766,11 @@ public class Singleton{
 #### UML类图
 ![简单工厂](./figure/1.png)
 
+更一般的有：
+
+![简单工厂2](./figure/17.png)
+
+
 #### 代码实现
 ```
 public interface Car{
@@ -820,6 +825,10 @@ public class SimpleFactory{
 在简单工厂的基础上加上新的工厂：
 
 ![工厂](./figure/2.png)
+
+更一般地，有：
+
+![工厂](./figure/18.png)
 
 #### 代码实现
 ```
@@ -1018,6 +1027,37 @@ public class Client{
 提供一种方法顺序访问一个聚合对象中各个元素, 而又无须暴露该对象的内部表示。
 #### UML类图
 ![迭代器](./figure/5.png)
+
+- Java Iterator（迭代器）不是一个集合，它是一种用于访问集合的方法，可用于迭代ArrayList和HashSet 等集合。
+- Iterator 是 Java 迭代器最简单的实现，ListIterator 是 Collection API 中的接口， 它扩展了Iterator 接口。
+
+迭代器 it 的三个基本操作是 next 、hasNext 和 remove。
+- 调用 it.next() 会返回迭代器的下一个元素，并且更新迭代器的状态。
+- 调用 it.hasNext() 用于检测集合中是否还有元素。
+- 调用 it.remove() 将迭代器返回的元素删除。
+
+```
+import java.util.ArrayList;
+ import java.util.Iterator;
+ public class IteratorTest {
+    public static void main(String[] args) {
+        // 创建集合
+        ArrayList<String> sites = new ArrayList<String>();
+        sites.add("Google");
+        sites.add(“Amazon");
+        sites.add("Taobao");
+        sites.add("Zhihu");
+        // 获取迭代器
+        Iterator<String> it = sites.iterator();
+        // 输出集合中的第一个元素
+        System.out.println(it.next());
+    }
+ }
+```
+三种for循环：
+1. ```for(int i = 0; i < size; i++)```
+2. ```for(ElemType element : site)```
+3. ```while(it.hasNest())```
 
 ### <center>数据访问对象模式
 数据访问对象模式的参与者：
