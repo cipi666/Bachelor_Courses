@@ -387,6 +387,59 @@ public class MethodTest {
 - 性能瓶颈：反射相当于一系列解释操作，通知JVM要做的事情，性能比直接的Java代码要慢很多.
 - 安全问题：反射机制破坏了封装性，因为通过反射可以获取并调用类的私有方法和字段。
 
+例子：通过反射修改私有成员变量，要求：
+（1）定义一个Disney类含有私有name属性，并且属性值为“MickeyMouse”;并且含有一个公有的getName方法；
+
+（2）创建一个Test类，在这个类里通过反射得到Disney类的私有name属性，修改私有的name属性值为”Donald Duck”，并用反射调用getName方法打印name属性值。
+
+```
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+// Disney类定义
+class Disney {
+    private String name = "Mickey Mouse";
+    
+    public String getName() {
+        return name;
+    }
+}
+
+// Test类实现反射操作
+public class Test {
+    public static void main(String[] args) {
+        try {
+            // 创建Disney实例
+            Disney disney = new Disney();
+            System.out.println("修改前的name值: " + disney.getName());
+            
+            // 1. 获取Disney类的Class对象
+            Class<?> clazz = Disney.class;
+            
+            // 2. 获取私有name字段
+            Field nameField = clazz.getDeclaredField("name");
+            
+            // 3. 设置字段可访问（突破private限制）
+            nameField.setAccessible(true);
+            
+            // 4. 修改私有name属性的值
+            nameField.set(disney, "Donald Duck");
+            
+            // 5. 获取getName方法
+            Method getNameMethod = clazz.getMethod("getName");
+            
+            // 6. 通过反射调用getName方法
+            Object result = getNameMethod.invoke(disney);
+            
+            System.out.println("通过反射调用getName方法的结果: " + result);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
 ## <center>面向对象
 **面向对象的三大特性：封装，继承和多态。**
 ### 简答题考点：面向对象与面向过程的优缺点
